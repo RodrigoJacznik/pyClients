@@ -21,14 +21,10 @@ class DataGenerator():
         return self.arduino.readline().strip()
 
 
-class Fuente(Protocol):
+class Fuente(BaseClient):
     def __init__(self, sock, dataGenerator):
-        self.sock = sock
+        super().__init__(sock)
         self.dgenerator = dataGenerator
-        self.id = None
-
-    def connect_server(self, host, port):
-        self.sock.connect(host, port)
 
     def send_data(self):
         data = self.dgenerator.get_data()

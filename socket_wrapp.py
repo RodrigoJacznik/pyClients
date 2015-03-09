@@ -32,4 +32,3 @@ class Socket():
             chunks.append(chunk)
             bytes_recd += len(chunk)
         return b''.join(chunks)
-

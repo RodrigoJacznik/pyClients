@@ -1,10 +1,10 @@
 import time
 import struct
 
+GET = 0
 POST = 1
 SUS = 2
 RESP = 3
-GET = 4
 
 RESP_TIPO_OK = 1
 RESP_TIPO_FAIL = 2
@@ -29,7 +29,14 @@ HEADER_LEN = 4
 RESP_LEN = 4
 
 
-class Protocol:
+class BaseClient:
+    def __init__(self, sock):
+        self.sock = sock
+        self.id = None
+
+    def connect_server(self, host, port):
+        self.sock.connect(host, port)
+
     def send_sus(self, op, data):
         msg = struct.pack('!3H', SUS, len(data), op) + data.encode()
         self.sock.send_all(msg)
@@ -43,15 +50,23 @@ class Protocol:
         self.sock.send_all(msg)
 
     def send_get(self, op, idDestino, tm_inicio=0, tm_fin=0):
-        fmt = '!4H'
+        fmt = '!5H'
         data = ""
         if (tm_inicio != 0 or tm_fin != 0):
             data = str(tm_inicio) + ';' 'tm_fin'
-        msg = struct.pack(fmt, GET, len(data), op, idDestino) + data.encode()
+        if self.id is None:
+            id = 0
+        else:
+            id = self.id
+
+        msg = struct.pack(fmt, GET, len(data), id, op, idDestino) + data.encode()
+        print("MENSJAE: ", msg)
+        self.sock.send_all(msg)
 
     def send_resp(self, tipo, codigo, data):
         fmt = '!4H'
         msg = struct.pack(fmt, RESP, len(data), tipo, codigo) + data.encode()
+        self.sock.send_all(msg)
 
     def recive_header(self):
         return struct.unpack('!2H', self.sock.recive_all(HEADER_LEN))
@@ -63,4 +78,3 @@ class Protocol:
         datos = struct.unpack(str(dlen) + 's', self.sock.recive_all(dlen))[0]
 
         return tipo, codigo, datos
-
