@@ -24,6 +24,10 @@ SUS_OP_FUENTE = 0
 SUS_OP_CONS = 1
 SUS_OP_DEL = 2
 
+GET_OP_NORMAL = 0
+GET_OP_TM = 1
+ALL_SOURCES = 0
+
 # mensaje len
 HEADER_LEN = 4
 RESP_LEN = 4
@@ -59,8 +63,7 @@ class BaseClient:
         else:
             id = self.id
 
-        msg = struct.pack(fmt, GET, len(data), id, op, idDestino) + data.encode()
-        print("MENSJAE: ", msg)
+        msg = struct.pack(fmt, GET, len(data), idDestino, op, id) + data.encode()
         self.sock.send_all(msg)
 
     def send_resp(self, tipo, codigo, data):
@@ -78,3 +81,9 @@ class BaseClient:
         datos = struct.unpack(str(dlen) + 's', self.sock.recive_all(dlen))[0]
 
         return tipo, codigo, datos
+
+    def recive_response(self):
+        opcode, dlen = self.recive_header()
+        tipo, codigo, datos = self.recive_resp(dlen)
+        return tipo, codigo, datos
+

@@ -7,25 +7,38 @@ class Consumidor(BaseClient):
     def __init__(self, sock):
         super().__init__(sock)
 
+    def request_sources(self):
+        self.send_get(GET_OP_NORMAL, ALL_SOURCES)
+        tipo, codigo, datos = self.recive_response()
+        if (tipo != RESP_TIPO_FAIL):
+            return datos.decode().strip().split(";")
+        return []
+
+    def select_source(self, idSource):
+        cons.send_sus(SUS_OP_CONS, idSource)
+        tipo, codigo, datos = self.recive_response()
+        if (tipo == RESP_TIPO_OK and codigo == RESP_CODIGO_101):
+            self.id = int(datos)
+            return True
+        return False
+
+    def start_stream(self, op, idSource, tm_inicio=0, tm_fin=0):
+        print("!!!!!!!!!!!!", str(idSource))
+        self.send_get(op, idSource, tm_inicio, tm_fin)
+        tipo, codigo, datos = self.recive_response()
+        while (tipo == RESP_TIPO_OK and codigo == RESP_CODIGO_104):
+            yield datos
+            tipo, codigo, datos = self.recive_response()
+
 
 if __name__ == '__main__':
     cons = Consumidor(Socket())
     cons.connect_server(sys.argv[1], int(sys.argv[2]))
+    datos = []
 
-    cons.send_get(0, 0)
-    opcode, dlen = cons.recive_header()
-    tipo, codigo, datos = cons.recive_resp(dlen)
-    cons.send_sus(1, '1')
-    opcode, dlen = cons.recive_header()
-    tipo, codigo, datos = cons.recive_resp(dlen)
-    if (tipo == RESP_TIPO_OK and codigo == RESP_CODIGO_101):
-        cons.id = int(datos)
-        cons.send_get(0, 1)
-        opcode, dlen = cons.recive_header()
-        tipo, codigo, datos = cons.recive_resp(dlen)
-        codigo = RESP_CODIGO_104
-        while (codigo == RESP_CODIGO_104):
-            print(datos)
-            opcode, dlen = cons.recive_header()
-            tipo, codigo, datos = cons.recive_resp(dlen)
-
+    sources = cons.request_sources()
+    if (cons.select_source("1")):
+        print("me suscribi");
+        for dato in cons.start_stream(GET_OP_NORMAL, 1):
+            datos.append(dato)
+    print(datos)

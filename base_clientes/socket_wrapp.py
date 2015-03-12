@@ -1,4 +1,7 @@
 import socket
+import logging
+
+logging.basicConfig(level=logging.INFO)
 
 
 class Socket():
@@ -14,13 +17,14 @@ class Socket():
     def send_all(self, msg):
         totalsent = 0
         msg_len = len(msg)
-        print("enviando {} bytes".format(msg_len))
+        logging.info("Enviando {} bytes".format(msg_len))
+        logging.info("MSG: {}".format(msg))
         while totalsent < msg_len:
             sent = self.sock.send(msg[totalsent:])
             if sent == 0:
                 raise RuntimeError("socket connection broken")
             totalsent += sent
-        print("Envie todos los datos que tenia")
+        logging.info("Envie todos los datos que tenia")
 
     def recive_all(self, msg_len):
         chunks = []
