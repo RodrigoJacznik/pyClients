@@ -2,7 +2,7 @@
 
 Usage:
     consumer.py <host> <port>
- 
+
 Otions:
     -h --help       Show this help
     -v --version    Show version
@@ -10,19 +10,12 @@ Otions:
 
 __version__ = 0.1
 
-import sys
 from docopt import docopt
 from socket_wrapp import Socket
-from protocol import (
-        BaseClient,
-        GET_OP_NORMAL,
-        ALL_SOURCES,
-        SUS_OP_CONS,
-        RESP_TIPO_OK,
-        RESP_TIPO_FAIL,
-        RESP_CODIGO_101,
-        RESP_CODIGO_104
-        )
+from protocol import (BaseClient, GET_OP_NORMAL, ALL_SOURCES, SUS_OP_CONS,
+                      RESP_TIPO_OK, RESP_TIPO_FAIL, RESP_CODIGO_101,
+                      RESP_CODIGO_104
+                      )
 
 
 class Consumidor(BaseClient):

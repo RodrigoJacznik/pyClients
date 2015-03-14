@@ -18,13 +18,8 @@ import serial
 import random
 import time
 from docopt import docopt
-from protocol import (
-            BaseClient,
-            SUS_OP_FUENTE,
-            RESP_TIPO_OK,
-            RESP_CODIGO_101,
-            RESP_CODIGO_103
-            )
+from protocol import (BaseClient, SUS_OP_FUENTE, RESP_TIPO_OK,
+                      RESP_CODIGO_101, RESP_CODIGO_103)
 from socket_wrapp import Socket
 
 
