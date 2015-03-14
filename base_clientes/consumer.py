@@ -1,10 +1,21 @@
 import sys
-from protocol import *
-from socket_wrapp import Socket
+from .socket_wrapp import Socket
+from .protocol import (
+        BaseClient,
+        GET_OP_NORMAL,
+        ALL_SOURCES,
+        SUS_OP_CONS,
+        RESP_TIPO_OK,
+        RESP_TIPO_FAIL,
+        RESP_CODIGO_101,
+        RESP_CODIGO_104
+        )
 
 
 class Consumidor(BaseClient):
-    def __init__(self, sock):
+    def __init__(self, sock=None):
+        if sock is None:
+            sock = Socket()
         super().__init__(sock)
 
     def request_sources(self):

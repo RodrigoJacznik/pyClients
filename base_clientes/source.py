@@ -1,8 +1,15 @@
 import sys
 import serial
 import random
-from protocol import *
-from socket_wrapp import Socket
+import time
+from .protocol import (
+        BaseClient,
+        SUS_OP_FUENTE,
+        RESP_TIPO_OK,
+        RESP_CODIGO_101,
+        RESP_CODIGO_103
+        )
+from .socket_wrapp import Socket
 
 
 class DataGeneratorMock():
@@ -23,6 +30,8 @@ class DataGenerator():
 
 class Fuente(BaseClient):
     def __init__(self, sock, dataGenerator):
+        if sock is None:
+            sock = Socket()
         super().__init__(sock)
         self.dgenerator = dataGenerator
 
