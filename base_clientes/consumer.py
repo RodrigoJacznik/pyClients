@@ -1,6 +1,19 @@
+"""Consumer
+
+Usage:
+    consumer.py <host> <port>
+ 
+Otions:
+    -h --help       Show this help
+    -v --version    Show version
+"""
+
+__version__ = 0.1
+
 import sys
-from .socket_wrapp import Socket
-from .protocol import (
+from docopt import docopt
+from socket_wrapp import Socket
+from protocol import (
         BaseClient,
         GET_OP_NORMAL,
         ALL_SOURCES,
@@ -42,12 +55,16 @@ class Consumidor(BaseClient):
 
 
 if __name__ == '__main__':
+    arg = docopt(__doc__, version=__version__)
     cons = Consumidor(Socket())
-    cons.connect_server(sys.argv[1], int(sys.argv[2]))
+    cons.connect_server(arg["<host>"], int(arg["<port>"]))
     datos = []
 
-    sources = cons.request_sources()
-    if (cons.select_source("1")):
+    sources = ['\t'.join(data.split(',')) for data in cons.request_sources()]
+
+    print("\n".join(sources))
+    selected_source = input(">> Select a source: ")
+    if (cons.select_source(selected_source)):
         for dato in cons.start_stream(GET_OP_NORMAL, 1):
             datos.append(dato)
     print(datos)
